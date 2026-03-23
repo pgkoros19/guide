@@ -57,13 +57,16 @@
             gap: 12px;
             margin-bottom: 5px;
         }
-        .logo-icon {
-            background: var(--accent);
-            width: 35px; height: 35px;
-            border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem;
+        
+        /* ΤΟ ΣΗΜΑ ΣΟΥ ΔΙΠΛΑ ΣΤΟ ΟΝΟΜΑ */
+        .logo-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--accent);
+            object-fit: cover;
         }
+
         .app-header h1 { margin: 0; font-size: 1.8rem; font-weight: 800; letter-spacing: 1px; }
         .app-header p { margin: 5px 0 0; opacity: 0.8; font-size: 1rem; font-weight: 400; }
 
@@ -180,7 +183,7 @@
 <div class="app-shell">
     <header class="app-header">
         <div class="logo-area">
-            <div class="logo-icon"><i class="fas fa-file-invoice"></i></div>
+            <img src="icon-512.png" alt="Logo" class="logo-img">
             <h1>SintaxisApp</h1>
         </div>
         <p>Πέτρος Γκόρος</p>
@@ -211,7 +214,7 @@
                 <li><strong>Αστυνομική Ταυτότητα</strong><span class="sub-text">Αντίγραφο ή καθαρές φωτογραφίες</span></li>
                 <li><strong>Ασφαλιστικά Βιβλιάρια ΟΑΕΕ</strong><span class="sub-text">Μέχρι το 2006 αν υπήρχε χρόνος</span></li>
                 <li><strong>Καρτέλες Ενσήμων ΙΚΑ</strong><span class="sub-text">Μέχρι το 2001 αν υπήρχε χρόνος</span></li>
-                <li><strong>Για Δημόσιο:</strong><span class="sub-text">Πιστοποιητικό Υπηρεσιακών Μεταβολών & Ανάλυση Ετήσιων Αποδοχών (Πίνακας από το 2002)</span></li>
+                <li><strong>Για Δημόσιο:</strong><span class="sub-text">Πιστοποιητικό Υπηρεσιακών Μεταβολών & Ανάλυση Ετήσιων Αποδοχών</span></li>
             </ul>
         </div>
     </div>
@@ -222,10 +225,10 @@
             <ul>
                 <li><strong>Κωδικοί Taxisnet</strong></li>
                 <li><strong>Αντίγραφο Ταυτότητας</strong></li>
-                <li><strong>Λογαριασμός Τράπεζας (IBAN)</strong><span class="sub-text">Βεβαίωση e-banking ή φωτοτυπία 1ης σελίδας</span></li>
-                <li><strong>Εθνικό Μητρώο Επικοινωνίας (ΕΜΕΠ)</strong><span class="sub-text">Προϋπόθεση για την υποβολή ηλεκτρονικής αίτησης</span></li>
+                <li><strong>Λογαριασμός Τράπεζας (IBAN)</strong></li>
+                <li><strong>Εθνικό Μητρώο Επικοινωνίας (ΕΜΕΠ)</strong></li>
                 <li><strong>Βεβαίωση Μόνιμης Κατοικίας</strong></li>
-                <li><strong>Για άνδρες:</strong><span class="sub-text">Πιστοποιητικό Στρατολογικής Κατάστασης Τύπου Α' (για εξαγορά)</span></li>
+                <li><strong>Για άνδρες:</strong><span class="sub-text">Πιστοποιητικό Στρατολογικής Κατάστασης Τύπου Α'</span></li>
             </ul>
             <div class="sos-box">SOS: Βεβαιωθείτε ότι οι φωτό είναι καθαρές και φαίνονται οι 4 γωνίες.</div>
         </div>
