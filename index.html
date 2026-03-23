@@ -45,26 +45,28 @@
         .app-header {
             background: var(--dark);
             color: white;
-            padding: 45px 25px 55px;
+            padding: 35px 25px 55px; /* Προσαρμοσμένο padding για το μεγαλύτερο λογότυπο */
             text-align: center;
             border-bottom: 4px solid var(--accent);
             border-radius: 0 0 30px 30px;
         }
         .logo-area {
             display: flex;
+            flex-direction: column; /* Το λογότυπο μπαίνει πάνω από το όνομα */
             align-items: center;
             justify-content: center;
             gap: 12px;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
         }
         
-        /* ΤΟ ΣΗΜΑ ΣΟΥ ΔΙΠΛΑ ΣΤΟ ΟΝΟΜΑ */
+        /* ΚΑΘΑΡΟ ΚΑΙ ΜΕΓΑΛΥΤΕΡΟ LOGO */
         .logo-img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid var(--accent);
-            object-fit: cover;
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            border: none;
+            background: transparent;
+            /* Αφαιρέθηκε το border-radius και κάθε ίχνος σκιάς/χρώματος */
         }
 
         .app-header h1 { margin: 0; font-size: 1.8rem; font-weight: 800; letter-spacing: 1px; }
