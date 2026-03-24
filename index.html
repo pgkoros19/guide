@@ -14,344 +14,485 @@
     <meta name="theme-color" content="#1a1f24">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --accent: #b35a44;
+            --accent-light: #fdf2f0;
             --dark: #1a1f24;
-            --bg: #f8fafc;
+            --dark-medium: #2d3741;
+            --bg: #f4f7f6;
             --white: #ffffff;
-            --border: #e2e8f0;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.02);
+            --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.02);
+            --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f1f5f9;
-            margin: 0; padding: 0;
-            display: flex; justify-content: center;
-            color: var(--dark);
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #e2e8f0; margin: 0; padding: 0; display: flex; justify-content: center; color: var(--text-main); -webkit-font-smoothing: antialiased; }
 
-        .app-shell {
-            width: 100%;
-            max-width: 480px;
-            background: var(--bg);
-            min-height: 100vh;
-            display: flex; flex-direction: column;
-            box-shadow: 0 0 50px rgba(0,0,0,0.1);
-        }
+        /* SPLASH & ANIMATIONS */
+        #splash { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--dark); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.6s ease-out, visibility 0.6s; }
+        #splash img { width: 90px; margin-bottom: 20px; animation: pulse 2s infinite; }
+        #splash h2 { color: white; font-weight: 800; letter-spacing: 1px; margin: 0; }
+        #splash p { color: var(--accent); font-size: 0.9rem; margin-top: 5px; }
+        @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.8; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgba(179, 90, 68, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(179, 90, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(179, 90, 68, 0); } }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-        /* HEADER & LOGO */
-        .app-header {
-            background: var(--dark);
-            color: white;
-            padding: 35px 25px 55px; /* Προσαρμοσμένο padding για το μεγαλύτερο λογότυπο */
-            text-align: center;
-            border-bottom: 4px solid var(--accent);
-            border-radius: 0 0 30px 30px;
-        }
-        .logo-area {
-            display: flex;
-            flex-direction: column; /* Το λογότυπο μπαίνει πάνω από το όνομα */
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 10px;
+        .fade-in-up { opacity: 0; animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .delay-1 { animation-delay: 1.2s; } .delay-2 { animation-delay: 1.3s; } .delay-3 { animation-delay: 1.4s; } .delay-4 { animation-delay: 1.5s; } .delay-5 { animation-delay: 1.6s; }
+
+        /* APP SHELL & HEADER (ANIMATED GRADIENT) */
+        .app-shell { width: 100%; max-width: 480px; background: var(--bg); min-height: 100vh; display: flex; flex-direction: column; box-shadow: 0 0 60px rgba(0,0,0,0.15); position: relative; overflow-x: hidden; }
+        
+        .app-header { 
+            position: relative; padding: 45px 25px 35px; text-align: center; z-index: 1;
+            background: linear-gradient(-45deg, #1a1f24, #2d3741, #3b1f18, #1a1f24);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            border-radius: 0 0 40px 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            margin-bottom: 20px;
         }
         
-        /* ΚΑΘΑΡΟ ΚΑΙ ΜΕΓΑΛΥΤΕΡΟ LOGO */
-        .logo-img {
-            width: 80px;
-            height: 80px;
-            object-fit: contain;
-            border: none;
-            background: transparent;
-            /* Αφαιρέθηκε το border-radius και κάθε ίχνος σκιάς/χρώματος */
-        }
+        /* Floating Share Button */
+        .btn-share-top { position: absolute; top: 25px; right: 25px; background: rgba(255,255,255,0.9); backdrop-filter: blur(5px); border: none; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 1.1rem; cursor: pointer; box-shadow: var(--shadow-sm); transition: var(--transition); z-index: 10; animation: pulse-ring 3s infinite; }
+        .btn-share-top:active { transform: scale(0.9); background: var(--white); }
+        
+        .dynamic-greeting { color: rgba(255,255,255,0.8); line-height: 1.4; margin-top: 10px; opacity: 0; animation: fadeInUp 0.5s ease forwards 1.8s; background: rgba(0,0,0,0.2); padding: 8px 15px; border-radius: 15px; display: inline-block; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.1);}
 
-        .app-header h1 { margin: 0; font-size: 1.8rem; font-weight: 800; letter-spacing: 1px; }
-        .app-header p { margin: 5px 0 0; opacity: 0.8; font-size: 1rem; font-weight: 400; }
+        .logo-area { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; margin-bottom: 0; }
+        .logo-img { width: 75px; height: 75px; object-fit: contain; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3)); }
+        .app-header h1 { margin: 10px 0 0; font-size: 2rem; font-weight: 800; letter-spacing: -1px; color: var(--white); }
+        .app-header p { margin: 2px 0 0; color: #e2e8f0; font-size: 1.1rem; font-weight: 400; letter-spacing: 0.5px; opacity: 0.9;}
 
-        /* QUICK TILES */
-        .main-actions {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            padding: 0 20px;
-            margin-top: -30px;
-        }
-        .main-tile {
-            background: var(--white);
-            aspect-ratio: 1 / 0.95;
-            border-radius: 20px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-decoration: none; color: var(--dark);
-            border: 1px solid var(--border);
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
-            transition: transform 0.2s;
-            text-align: center; padding: 10px;
-        }
-        .main-tile:active { transform: scale(0.95); }
-        .main-tile i { font-size: 1.8rem; color: var(--accent); margin-bottom: 10px; }
-        .main-tile span { font-size: 0.8rem; font-weight: 700; line-height: 1.2; }
+        /* QUICK TILES (Glowing effect) */
+        .main-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 0 20px; position: relative; z-index: 2; margin-top: -10px; }
+        .main-tile { background: var(--white); cursor: pointer; aspect-ratio: 1 / 0.95; border-radius: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: var(--text-main); border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: var(--shadow-sm); transition: var(--transition); text-align: center; padding: 15px; position: relative; overflow: hidden; }
+        .main-tile:hover { transform: translateY(-3px); box-shadow: 0 12px 25px -5px rgba(179, 90, 68, 0.15); border-color: rgba(179, 90, 68, 0.3); }
+        .main-tile:active { transform: scale(0.96); box-shadow: var(--shadow-sm); }
+        
+        .icon-badge { width: 55px; height: 55px; background-color: var(--accent-light); border-radius: 18px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; transition: var(--transition); }
+        .main-tile i { font-size: 1.6rem; color: var(--accent); }
+        .main-tile:active .icon-badge { background-color: var(--accent); transform: scale(1.1); }
+        .main-tile:active i { color: var(--white); }
+        .main-tile span.tile-title { font-size: 0.85rem; font-weight: 700; line-height: 1.2; color: var(--dark); }
+        .main-tile span.tile-desc { font-size: 0.65rem; font-weight: 400; color: var(--text-muted); margin-top: 4px; line-height: 1.2; }
 
-        .section-label {
-            padding: 30px 25px 10px;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: #64748b;
-            font-weight: 800;
-        }
+        .section-label { padding: 35px 25px 12px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); font-weight: 800; display: flex; align-items: center; gap: 10px; }
+        .section-label::after { content: ''; flex-grow: 1; height: 1px; background: rgba(179, 90, 68, 0.2); }
 
-        /* ACCORDIONS */
-        .doc-card {
-            margin: 8px 15px;
-            background: var(--white);
-            border-radius: 15px;
-            border: 1px solid var(--border);
-            overflow: hidden;
-        }
-        .doc-header {
-            padding: 18px 20px;
-            display: flex; justify-content: space-between; align-items: center;
-            cursor: pointer;
-        }
-        .doc-header h3 { margin: 0; font-size: 0.9rem; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 10px; }
-        .doc-header i.indicator { color: var(--accent); font-size: 0.8rem; transition: 0.3s; }
+        /* DOCS GRIDS */
+        .docs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 15px; }
+        .doc-tile { background: var(--white); border-radius: 20px; padding: 18px 15px; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: var(--shadow-sm); cursor: pointer; transition: var(--transition); }
+        .doc-tile:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: rgba(179, 90, 68, 0.2); }
+        .doc-tile:active { transform: scale(0.95); background: #fafafa; }
+        .doc-tile-icon { background: #f1f5f9; width: 42px; height: 42px; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: var(--dark); font-size: 1.2rem; transition: var(--transition); }
+        .doc-tile:hover .doc-tile-icon { transform: scale(1.1); }
+        
+        .icon-blue { color: #0284c7; background: #e0f2fe; } .icon-green { color: #16a34a; background: #dcfce7; } .icon-red { color: #dc2626; background: #fee2e2; } .icon-orange { color: #d97706; background: #fef3c7; } .icon-purple { color: #7c3aed; background: #ede9fe; } .icon-gray { color: #475569; background: #f1f5f9; }
+        .doc-tile-content h3 { margin: 0; font-size: 0.85rem; font-weight: 700; color: var(--dark); line-height: 1.2; }
+        .doc-tile-content span { font-size: 0.65rem; color: var(--text-muted); margin-top: 4px; display: block; }
 
-        .doc-body {
-            display: none;
-            padding: 0 20px 20px;
-            border-top: 1px solid #f1f5f9;
-            background: #fafafa;
-        }
-        .doc-body ul { list-style: none; padding: 0; margin: 0; }
-        .doc-body li {
-            padding: 12px 0;
-            border-bottom: 1px solid #edf2f7;
-            font-size: 0.85rem; line-height: 1.5;
-            color: #475569;
-        }
-        .doc-body li:last-child { border: none; }
-        .doc-body strong { color: var(--dark); display: block; margin-bottom: 2px; }
-        .sub-text { font-size: 0.75rem; color: #94a3b8; display: block; }
+        /* ΓΡΗΓΟΡΗ ΕΞΟΥΣΙΟΔΟΤΗΣΗ */
+        .copy-section { margin: 15px; padding: 25px; background: var(--white); border-radius: 24px; border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: var(--shadow-sm); position: relative; overflow: hidden; transition: var(--transition);}
+        .copy-section:hover { box-shadow: var(--shadow-md); border-color: rgba(179, 90, 68, 0.3); }
+        .copy-section::after { content: '\f56d'; font-family: "Font Awesome 6 Free"; font-weight: 900; position: absolute; right: -20px; bottom: -20px; font-size: 10rem; color: rgba(179, 90, 68, 0.03); transform: rotate(-15deg); z-index: 0; pointer-events: none; }
+        .copy-section::before { content: ''; position: absolute; top: 0; right: 0; width: 30px; height: 30px; background: linear-gradient(225deg, var(--bg) 50%, rgba(0,0,0,0.02) 50%, rgba(255,255,255,0.8) 55%); border-radius: 0 24px 0 12px; z-index: 1; }
+        .copy-section p#authText { font-size: 0.85rem; font-style: italic; color: var(--text-main); line-height: 1.6; margin: 0; padding-right: 15px; font-weight: 400; position: relative; z-index: 1; }
+        .btn-copy { width: 100%; background: linear-gradient(135deg, #c46b54, #b35a44); color: white; border: none; padding: 16px; border-radius: 14px; font-weight: 700; font-size: 0.9rem; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; transition: var(--transition); box-shadow: 0 4px 15px rgba(179, 90, 68, 0.3); position: relative; z-index: 1; }
+        .btn-copy:active { transform: scale(0.97); box-shadow: 0 2px 5px rgba(179, 90, 68, 0.2); }
 
-        .sos-box {
-            background: #fff5f5; border: 1px solid #feb2b2; padding: 12px;
-            border-radius: 10px; margin-top: 15px; color: #c53030; font-size: 0.8rem; font-weight: 700;
-        }
+        /* ΕΠΑΦΕΣ */
+        .contact-wrapper { padding: 0 15px 40px; }
+        .quick-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+        .qa-tile { background: var(--white); padding: 15px 10px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; box-shadow: var(--shadow-sm); cursor: pointer; transition: var(--transition); border: 1px solid rgba(226, 232, 240, 0.8); }
+        .qa-tile:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+        .qa-tile:active { transform: scale(0.93); }
+        .qa-icon { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: white; }
+        .qa-icon.tel { background: linear-gradient(135deg, #34d399, #10b981); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); }
+        .qa-icon.viber { background: linear-gradient(135deg, #a78bfa, #7c3aed); box-shadow: 0 4px 10px rgba(124, 58, 237, 0.3); }
+        .qa-icon.email { background: linear-gradient(135deg, #7dd3fc, #0284c7); box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3); }
+        .qa-tile span { font-size: 0.75rem; font-weight: 700; color: var(--dark); }
 
-        /* UTILITY */
-        .copy-section {
-            margin: 15px; padding: 20px;
-            background: #f1f5f9; border-radius: 20px;
-            border: 1px dashed var(--accent);
-        }
-        .btn-copy {
-            width: 100%; background: var(--accent); color: white; border: none;
-            padding: 15px; border-radius: 12px; font-weight: 700; margin-top: 15px;
-            display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;
-        }
+        .action-list { display: flex; flex-direction: column; gap: 10px; }
+        .action-row { background: var(--white); padding: 18px 20px; border-radius: 16px; display: flex; align-items: center; gap: 15px; box-shadow: var(--shadow-sm); border: 1px solid rgba(226, 232, 240, 0.8); cursor: pointer; transition: var(--transition); }
+        .action-row:hover { transform: translateX(5px); border-color: rgba(179, 90, 68, 0.2); }
+        .action-row:active { transform: scale(0.97); }
+        .action-row.primary { background: linear-gradient(135deg, #2d3741, #1a1f24); color: white; border: none; box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
+        .action-row.primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        .ar-icon { font-size: 1.2rem; width: 24px; text-align: center; }
+        .ar-icon.map { color: #f59e0b; }
+        .ar-icon.google { color: #ea4335; }
+        .ar-text { font-size: 0.9rem; font-weight: 700; flex-grow: 1; }
+        .ar-chevron { font-size: 0.8rem; opacity: 0.4; transition: var(--transition); }
+        .action-row:hover .ar-chevron { transform: translateX(3px); opacity: 0.8; color: var(--accent); }
+        .action-row.primary .ar-icon, .action-row.primary .ar-chevron { color: white; opacity: 0.8; }
 
-        /* CONTACT GRID */
-        .contact-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            padding: 0 15px 30px;
-        }
-        .contact-btn {
-            background: var(--white); border: 1px solid var(--border);
-            padding: 15px; border-radius: 15px; text-decoration: none; color: var(--dark);
-            display: flex; align-items: center; justify-content: center; gap: 10px; 
-            font-size: 0.8rem; font-weight: 700; text-align: center;
-        }
-        .contact-btn i { color: var(--accent); font-size: 1.1rem; }
-        .full-width { grid-column: span 2; background: var(--dark); color: white; border: none; }
+        /* PREMIUM FOOTER */
+        .app-footer { background: #1a1f24; padding: 50px 25px 40px; text-align: center; color: white; border-radius: 40px 40px 0 0; position: relative; z-index: 1; }
+        .app-footer::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 50px; height: 5px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 15px; }
+        .footer-content { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 30px 20px; border-radius: 24px; margin-bottom: 25px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .footer-name { font-size: 1.4rem; font-weight: 800; margin-bottom: 5px; color: var(--white); }
+        .footer-desc { font-size: 0.8rem; color: var(--accent); font-weight: 600; margin-bottom: 20px; letter-spacing: 1px; text-transform: uppercase; }
+        .footer-contact-info { display: flex; flex-direction: column; gap: 15px; }
+        .fc-item { display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 0.85rem; color: #cbd5e1; font-weight: 400; }
+        .fc-item i { color: var(--accent); font-size: 1.1rem; width: 18px; text-align: center; background: rgba(179, 90, 68, 0.1); padding: 8px; border-radius: 50%; }
+        .footer-bottom { font-size: 0.75rem; color: #64748b; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); }
 
-        /* FOOTER */
-        .app-footer {
-            background: var(--dark); padding: 40px 20px; text-align: center;
-            color: white; border-top: 4px solid var(--accent);
-        }
-        .footer-name { font-size: 1.1rem; font-weight: 800; margin-bottom: 5px; letter-spacing: 0.5px; }
-        .footer-desc { font-size: 0.8rem; opacity: 0.7; margin-bottom: 20px; font-weight: 300; }
-        .footer-info { font-size: 0.75rem; opacity: 0.5; margin-top: 15px; border-top: 1px solid #333; padding-top: 15px; }
+        /* BOTTOM SHEET & ΔΙΟΡΘΩΣΕΙΣ (TICK KAI SOS) */
+        .sheet-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); z-index: 1000; opacity: 0; visibility: hidden; transition: 0.3s ease; }
+        .sheet-overlay.show { opacity: 1; visibility: visible; }
+        .bottom-sheet { position: fixed; bottom: -100%; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: #fff; border-radius: 30px 30px 0 0; z-index: 1001; padding: 20px 25px 40px; box-sizing: border-box; transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1); max-height: 85vh; overflow-y: auto; box-shadow: 0 -10px 40px rgba(0,0,0,0.2); }
+        .bottom-sheet.show { bottom: 0; }
+        .sheet-drag-handle { width: 50px; height: 5px; background: #e2e8f0; border-radius: 5px; margin: 0 auto 25px; }
+        .sheet-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
+        .sheet-icon { width: 50px; height: 50px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        .sheet-header h2 { margin: 0; font-size: 1.2rem; color: var(--dark); font-weight: 800; }
+        
+        .sheet-content ul { list-style: none; padding: 0; margin: 0; }
+        .sheet-content li { padding: 15px 0; border-bottom: 1px solid #f8fafc; font-size: 0.9rem; line-height: 1.6; color: var(--text-main); display: flex; flex-direction: column; }
+        .sheet-content li:last-child { border: none; }
+        
+        /* ΔΙΟΡΘΩΣΗ: Το τικ εφαρμόζεται ΜΟΝΟ στα li strong, ΟΧΙ στο SOS box */
+        .sheet-content li strong { color: var(--dark); font-weight: 700; margin-bottom: 2px; display: flex; align-items: flex-start; gap: 8px;}
+        .sheet-content li strong::before { content: '\f00c'; font-family: "Font Awesome 6 Free"; font-weight: 900; color: #10b981; font-size: 0.8rem; margin-top: 3px; }
+        .sheet-content .sub-text { font-size: 0.8rem; color: var(--text-muted); padding-left: 20px;}
+        
+        /* ΝΕΟ DESIGN ΓΙΑ ΤΟ SOS BOX */
+        .sos-box { background: #fef2f2; border-left: 4px solid #ef4444; padding: 15px 20px; border-radius: 0 12px 12px 0; margin-top: 25px; color: #b91c1c; font-size: 0.85rem; font-weight: 500; display: flex; gap: 12px; align-items: flex-start; line-height: 1.5; box-shadow: 0 2px 5px rgba(239,68,68,0.05); }
+        .sos-box i { margin-top: 2px; font-size: 1.3rem; color: #ef4444; }
+        .sos-box strong { color: #991b1b; display: block; margin-bottom: 3px; font-weight: 800; }
+        /* Βεβαιωνόμαστε ότι το SOS box δεν έχει τικ */
+        .sos-box strong::before { content: none !important; }
+
+        .sheet-close-btn { width: 100%; background: #f1f5f9; color: var(--dark); border: none; padding: 16px; border-radius: 14px; font-weight: 700; margin-top: 25px; cursor: pointer; transition: 0.2s; font-size: 0.95rem; }
+        .sheet-close-btn:active { background: #e2e8f0; transform: scale(0.98); }
+
+        /* SMART MODAL & TOAST */
+        #modalOverlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); z-index: 10000; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; }
+        #modalOverlay.show { display: flex; opacity: 1; }
+        .custom-modal { background: var(--white); width: 85%; max-width: 320px; border-radius: 24px; padding: 30px 20px 25px; text-align: center; box-shadow: var(--shadow-lg); transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        #modalOverlay.show .custom-modal { transform: scale(1); }
+        #modalIcon { font-size: 2.5rem; margin-bottom: 15px; transition: color 0.3s; }
+        .mi-external { color: var(--accent); } .mi-call { color: #10b981; } .mi-viber { color: #7c3aed; } .mi-email { color: #0284c7; }
+        .custom-modal h3 { margin: 0 0 10px; font-size: 1.1rem; color: var(--dark); font-weight: 800; }
+        .custom-modal p { margin: 0 0 25px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; }
+        .modal-buttons { display: flex; gap: 10px; }
+        .modal-btn { flex: 1; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; border: none; cursor: pointer; transition: var(--transition); }
+        .btn-cancel { background: #f1f5f9; color: var(--text-muted); } .btn-cancel:active { background: #e2e8f0; transform: scale(0.95); }
+        .btn-confirm { background: linear-gradient(135deg, #c46b54, #b35a44); color: white; box-shadow: 0 4px 10px rgba(179, 90, 68, 0.3); } .btn-confirm:active { transform: scale(0.95); }
+
+        #toast { visibility: hidden; min-width: 250px; background-color: #10b981; color: #fff; text-align: center; border-radius: 50px; padding: 16px 24px; position: fixed; z-index: 9999; left: 50%; top: 20px; transform: translateX(-50%) translateY(-50px); font-size: 0.85rem; font-weight: 600; box-shadow: var(--shadow-lg); opacity: 0; transition: opacity 0.3s cubic-bezier(0.175, 0.885, 0.32, 1); display: flex; align-items: center; gap: 10px; justify-content: center; }
+        #toast.show { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
+        #toast i { color: #fff; font-size: 1.1rem; }
+
+        .hidden-data { display: none; }
     </style>
 </head>
 <body>
 
+<div id="splash">
+    <img src="icon-512.png" alt="SintaxisApp Logo">
+    <h2>SintaxisApp</h2>
+    <p>Πέτρος Γκόρος</p>
+</div>
+
+<div id="toast"><i class="fas fa-check-circle"></i> <span>Επιτυχία!</span></div>
+
+<div id="modalOverlay">
+    <div class="custom-modal">
+        <i id="modalIcon" class="fas fa-external-link-alt mi-external"></i>
+        <h3 id="modalTitle">Τίτλος</h3>
+        <p id="modalDesc">Περιγραφή</p>
+        <div class="modal-buttons">
+            <button class="modal-btn btn-cancel" onclick="closeModal()">ΑΚΥΡΟ</button>
+            <button class="modal-btn btn-confirm" onclick="proceedToLink()">ΣΥΝΕΧΕΙΑ</button>
+        </div>
+    </div>
+</div>
+
+<div class="sheet-overlay" onclick="closeSheet()"></div>
+<div class="bottom-sheet" id="bottomSheet">
+    <div class="sheet-drag-handle" onclick="closeSheet()"></div>
+    <div class="sheet-header">
+        <div class="sheet-icon" id="sheetIcon"></div>
+        <h2 id="sheetTitle">Τίτλος</h2>
+    </div>
+    <div class="sheet-content" id="sheetContent"></div>
+    <button class="sheet-close-btn" onclick="closeSheet()">Εντάξει, το κατάλαβα</button>
+</div>
+
+<div id="data-rantevou" class="hidden-data"><ul><li><strong>Κωδικοί Taxisnet</strong></li><li><strong>Αστυνομική Ταυτότητα:</strong> <span class="sub-text">Φωτοτυπία ή καθαρές φωτογραφίες</span></li><li><strong>Ασφαλιστικά Βιβλιάρια ΟΑΕΕ:</strong> <span class="sub-text">Μέχρι το 2006 (αν υπήρχε χρόνος)</span></li><li><strong>Καρτέλες Ενσήμων ΙΚΑ:</strong> <span class="sub-text">Μέχρι το 2001 (αν υπήρχε χρόνος)</span></li><li><strong>Πιστοποιητικό Υπηρεσιακών:</strong> <span class="sub-text">Μόνο σε περιπτώσεις Δημοσίου.</span></li><li><strong>Μεταβολών & Ανάλυση Ετήσιων Αποδοχών από 2002:</strong> <span class="sub-text">Μόνο σε περιπτώσεις Δημοσίου.</span></li></ul></div>
+<div id="data-giratos" class="hidden-data"><ul><li><strong>Κωδικοί Taxisnet</strong></li><li><strong>Αστυνομική Ταυτότητα:</strong> <span class="sub-text">Φωτοτυπία ή καθαρές φωτογραφίες</span></li><li><strong>Λογαριασμός Τράπεζας (IBAN):</strong> <span class="sub-text">Φωτοτυπία 1ης σελίδας βιβλιαρίου ή Βεβαίωση e-banking</span></li><li><strong>Εθνικό Μητρώο Επικοινωνίας (ΕΜΕΠ):</strong> <span class="sub-text">Πιστοποιημένο κινητό και e-mail</span></li><li><strong>Βεβαίωση Μόνιμης Κατοικίας</strong></li><li><strong>Πιστοποιητικό Στρατολογικής Κατάστασης Τύπου Α':</strong> <span class="sub-text">Μόνο για άνδρες σε περίπτωση εξαγοράς</span></li></ul><div class="sos-box"><i class="fas fa-exclamation-triangle"></i><div><strong>Προσοχή στις φωτογραφίες</strong>Βεβαιωθείτε ότι οι φωτό είναι καθαρές, χωρίς γυαλάδες και φαίνονται οι 4 γωνίες.</div></div></div>
+<div id="data-thanatou" class="hidden-data"><ul><li><strong>Κωδικοί Taxisnet:</strong> <span class="sub-text">Θανόντος & Δικαιοδόχου</span></li><li><strong>Αστυνομική Ταυτότητα:</strong> <span class="sub-text">Φωτοτυπία ή καθαρές φωτογραφίες</span></li><li><strong>Λογαριασμός Τράπεζας (IBAN):</strong> <span class="sub-text">Φωτοτυπία 1ης σελίδας βιβλιαρίου ή Βεβαίωση e-banking</span></li><li><strong>Ληξιαρχική Πράξη Θανάτου:</strong> <span class="sub-text">Να έχει εκδοθεί</span></li><li><strong>Πιστοποιητικό Εγγυτέρων Συγγενών:</strong> <span class="sub-text">Να έχει εκδοθεί</span></li></ul></div>
+<div id="data-anapirias" class="hidden-data"><ul><li><strong>Κωδικοί Taxisnet</strong></li><li><strong>Αστυνομική Ταυτότητα:</strong> <span class="sub-text">Φωτοτυπία ή καθαρές φωτογραφίες</span></li><li><strong>Λογαριασμός Τράπεζας (IBAN):</strong> <span class="sub-text">Φωτοτυπία 1ης σελίδας βιβλιαρίου ή Βεβαίωση e-banking</span></li><li><strong>Εθνικό Μητρώο Επικοινωνίας (ΕΜΕΠ):</strong> <span class="sub-text">Πιστοποιημένο κινητό και e-mail</span></li><li><strong>Γνωμάτευση ΚΕΠΑ:</strong> <span class="sub-text">(Αν δεν υπάρχει, ακολουθήστε τις οδηγίες για ΚΕΠΑ)</span></li></ul></div>
+<div id="data-kepa" class="hidden-data"><ul><li><strong>Ηλεκτρονική Αίτηση:</strong> <span class="sub-text">Γίνεται πλέον ψηφιακά από το γραφείο μας.</span></li><li><strong>Επικοινωνία με Ιατρούς:</strong> <span class="sub-text">Θα συμπληρώσουν τον εισηγητικό φάκελο ψηφιακά.</span></li><li><strong>Ενημέρωση με SMS:</strong> <span class="sub-text">Θα λάβετε μήνυμα για την ημερομηνία εξέτασης.</span></li></ul><div class="sos-box" style="background:#e0f2fe; border-left-color:#0ea5e9; color:#0369a1;"><i class="fas fa-info-circle" style="color:#0ea5e9"></i><div><strong>Ημέρα Επιτροπής</strong>Έχετε μαζί σας όλες τις πρωτότυπες εξετάσεις.</div></div></div>
+<div id="data-kep" class="hidden-data"><ul><li><strong>Κινητό στο όνομά σας:</strong> <span class="sub-text">Απαραίτητο για ταυτοποίηση</span></li><li><strong>Επίσκεψη στο ΚΕΠ:</strong> <span class="sub-text">Έχετε μαζί ταυτότητα και το κινητό σας</span></li><li><strong>Δήλωση Στοιχείων:</strong> <span class="sub-text">Ζητήστε δήλωση κινητού και email</span></li></ul><p style="font-size: 0.85rem; font-weight: 700; margin-top: 15px; color: var(--dark);">Email γραφείου για δήλωση στο ΚΕΠ:</p><div style="background:#f1f5f9; padding:15px; border-radius:12px; font-size:0.8rem; color: var(--text-main); margin-top:8px; text-align:center; border: 1px dashed #cbd5e1;">Σε περίπτωση που δεν έχετε δικό σας email δηλώστε το:<br><strong style="color: var(--accent); font-family: monospace; word-break: break-all; font-size: 0.95rem; display:block; margin-top:8px;">sintaxi+το_ονοματεπώνυμό_σας@taxisdp.gr</strong></div></div>
+
 <div class="app-shell">
     <header class="app-header">
+        <button class="btn-share-top" onclick="shareDigitalCard()" title="Κοινοποίηση Στοιχείων"><i class="fas fa-share-nodes"></i></button>
+        
         <div class="logo-area">
             <img src="icon-512.png" alt="Logo" class="logo-img">
-            <h1>SintaxisApp</h1>
+            <div class="titles">
+                <h1>SintaxisApp</h1>
+                <div id="greetingText" class="dynamic-greeting"></div>
+            </div>
         </div>
-        <p>Πέτρος Γκόρος</p>
     </header>
 
-    <div class="main-actions">
-        <a href="https://www.e-efka.gov.gr/el/asphalismenoi/misthotoi/atomikos-logariasmos-asphalises" class="main-tile">
-            <i class="fas fa-id-card"></i><span>Ατομικός Λογαριασμός</span>
-        </a>
-        <a href="https://www.e-efka.gov.gr/el/elektronikes-yperesies/synoptiko-kai-analytiko-istoriko-asphalises" class="main-tile">
-            <i class="fas fa-history"></i><span>Ασφαλιστικό Βιογραφικό</span>
-        </a>
-        <a href="https://www.e-efka.gov.gr/el/elektronikes-yperesies/parakoloythese-poreias-aiteses" class="main-tile">
-            <i class="fas fa-search-location"></i><span>Πορεία Αίτησης</span>
-        </a>
-        <a href="https://www.gov.gr/ipiresies/polites-kai-kathemerinoteta/stoikheia-polite-kai-tautopoietika-eggrapha/thurida-polite" class="main-tile">
-            <i class="fas fa-inbox"></i>
-            <span>Θυρίδα Πολίτη</span>
-            <span style="font-size: 0.65rem; font-weight: 400; color: #64748b; margin-top: 6px; line-height: 1.1;">Εδώ αναρτάται η απόφασή σας</span>
-        </a>
-    </div>
-
-    <div class="section-label">Οδηγοί & Δικαιολογητικά</div>
-
-    <div class="doc-card">
-        <div class="doc-header" onclick="toggle(this)"><h3><i class="fas fa-handshake"></i> Απαραίτητα 1ου Ραντεβού</h3><i class="fas fa-plus indicator"></i></div>
-        <div class="doc-body">
-            <ul>
-                <li><strong>Κωδικοί Taxisnet</strong></li>
-                <li><strong>Αστυνομική Ταυτότητα</strong><span class="sub-text">Αντίγραφο ή καθαρές φωτογραφίες</span></li>
-                <li><strong>Ασφαλιστικά Βιβλιάρια ΟΑΕΕ</strong><span class="sub-text">Μέχρι το 2006 αν υπήρχε χρόνος</span></li>
-                <li><strong>Καρτέλες Ενσήμων ΙΚΑ</strong><span class="sub-text">Μέχρι το 2001 αν υπήρχε χρόνος</span></li>
-                <li><strong>Για Δημόσιο:</strong><span class="sub-text">Πιστοποιητικό Υπηρεσιακών Μεταβολών & Ανάλυση Ετήσιων Αποδοχών</span></li>
-            </ul>
+    <div class="main-actions fade-in-up delay-1">
+        <div class="main-tile" onclick="openSmartLink('https://www.e-efka.gov.gr/el/asphalismenoi/misthotoi/atomikos-logariasmos-asphalises', 'e-ΕΦΚΑ')">
+            <div class="icon-badge"><i class="fas fa-id-card"></i></div>
+            <span class="tile-title">Ατομικός Λογαριασμός</span>
+            <span class="tile-desc">e-ΕΦΚΑ (Ένσημα)</span>
+        </div>
+        <div class="main-tile" onclick="openSmartLink('https://www.e-efka.gov.gr/el/elektronikes-yperesies/synoptiko-kai-analytiko-istoriko-asphalises', 'e-ΕΦΚΑ')">
+            <div class="icon-badge"><i class="fas fa-history"></i></div>
+            <span class="tile-title">Ασφαλιστικό Βιογραφικό</span>
+            <span class="tile-desc">Συνοπτικό ιστορικό</span>
+        </div>
+        <div class="main-tile" onclick="openSmartLink('https://www.e-efka.gov.gr/el/elektronikes-yperesies/parakoloythese-poreias-aiteses', 'e-ΕΦΚΑ')">
+            <div class="icon-badge"><i class="fas fa-search-location"></i></div>
+            <span class="tile-title">Πορεία Αίτησης</span>
+            <span class="tile-desc">Παρακολούθηση</span>
+        </div>
+        <div class="main-tile" onclick="openSmartLink('https://www.gov.gr/ipiresies/polites-kai-kathemerinoteta/stoikheia-polite-kai-tautopoietika-eggrapha/thurida-polite', 'Gov.gr')">
+            <div class="icon-badge"><i class="fas fa-inbox"></i></div>
+            <span class="tile-title">Θυρίδα Πολίτη</span>
+            <span class="tile-desc">Απόφαση Συνταξιοδότησης</span>
         </div>
     </div>
 
-    <div class="doc-card">
-        <div class="doc-header" onclick="toggle(this)"><h3><i class="fas fa-user-check"></i> Σύνταξη Γήρατος</h3><i class="fas fa-plus indicator"></i></div>
-        <div class="doc-body">
-            <ul>
-                <li><strong>Κωδικοί Taxisnet</strong></li>
-                <li><strong>Αντίγραφο Ταυτότητας</strong></li>
-                <li><strong>Λογαριασμός Τράπεζας (IBAN)</strong></li>
-                <li><strong>Εθνικό Μητρώο Επικοινωνίας (ΕΜΕΠ)</strong></li>
-                <li><strong>Βεβαίωση Μόνιμης Κατοικίας</strong></li>
-                <li><strong>Για άνδρες:</strong><span class="sub-text">Πιστοποιητικό Στρατολογικής Κατάστασης Τύπου Α'</span></li>
-            </ul>
-            <div class="sos-box">SOS: Βεβαιωθείτε ότι οι φωτό είναι καθαρές και φαίνονται οι 4 γωνίες.</div>
+    <div class="section-label fade-in-up delay-2">Απαραίτητα Δικαιολογητικά</div>
+    <div class="docs-grid fade-in-up delay-2">
+        <div class="doc-tile" onclick="openSheet('rantevou', 'Απαραίτητα 1ου Ραντεβού', 'fa-handshake', '#0284c7', '#e0f2fe')">
+            <div class="doc-tile-icon icon-blue"><i class="fas fa-handshake"></i></div>
+            <div class="doc-tile-content"><h3>1ο Ραντεβού</h3><span>Τι να φέρετε</span></div>
+        </div>
+        <div class="doc-tile" onclick="openSheet('giratos', 'Σύνταξη Γήρατος', 'fa-user-check', '#16a34a', '#dcfce7')">
+            <div class="doc-tile-icon icon-green"><i class="fas fa-user-check"></i></div>
+            <div class="doc-tile-content"><h3>Γήρατος</h3><span>Δικαιολογητικά</span></div>
+        </div>
+        <div class="doc-tile" onclick="openSheet('thanatou', 'Σύνταξη Λόγω Θανάτου', 'fa-heart-crack', '#dc2626', '#fee2e2')">
+            <div class="doc-tile-icon icon-red"><i class="fas fa-heart-crack"></i></div>
+            <div class="doc-tile-content"><h3>Θανάτου</h3><span>Δικαιολογητικά</span></div>
+        </div>
+        <div class="doc-tile" onclick="openSheet('anapirias', 'Σύνταξη Αναπηρίας', 'fa-wheelchair', '#d97706', '#fef3c7')">
+            <div class="doc-tile-icon icon-orange"><i class="fas fa-wheelchair"></i></div>
+            <div class="doc-tile-content"><h3>Αναπηρίας</h3><span>Δικαιολογητικά</span></div>
         </div>
     </div>
 
-    <div class="doc-card">
-        <div class="doc-header" onclick="toggle(this)"><h3><i class="fas fa-heart"></i> Σύνταξη Λόγω Θανάτου</h3><i class="fas fa-plus indicator"></i></div>
-        <div class="doc-body">
-            <ul>
-                <li><strong>Κωδικοί Taxisnet</strong><span class="sub-text">Θανόντος & Δικαιοδόχου</span></li>
-                <li><strong>Αντίγραφο Ταυτότητας</strong></li>
-                <li><strong>Λογαριασμός Τράπεζας (IBAN)</strong></li>
-                <li><strong>Εθνικό Μητρώο Επικοινωνίας (ΕΜΕΠ)</strong></li>
-                <li><strong>Ληξιαρχική Πράξη Θανάτου</strong></li>
-                <li><strong>Πιστοποιητικό Εγγυτέρων Συγγενών</strong></li>
-            </ul>
+    <div class="section-label fade-in-up delay-3">Χρήσιμοι Οδηγοί</div>
+    <div class="docs-grid fade-in-up delay-3">
+        <div class="doc-tile" onclick="openSheet('kepa', 'Οδηγίες για ΚΕΠΑ', 'fa-notes-medical', '#7c3aed', '#ede9fe')">
+            <div class="doc-tile-icon icon-purple"><i class="fas fa-notes-medical"></i></div>
+            <div class="doc-tile-content"><h3>ΚΕΠΑ</h3><span>Διαδικασία επιτροπής</span></div>
+        </div>
+        <div class="doc-tile" onclick="openSheet('kep', 'Πιστοποίηση Κινητού & e-mail', 'fa-info-circle', '#475569', '#f1f5f9')">
+            <div class="doc-tile-icon icon-gray"><i class="fas fa-info-circle"></i></div>
+            <div class="doc-tile-content"><h3>ΕΜΕΠ / ΚΕΠ</h3><span>Πιστοποίηση Κινητού</span></div>
         </div>
     </div>
 
-    <div class="doc-card">
-        <div class="doc-header" onclick="toggle(this)"><h3><i class="fas fa-wheelchair"></i> Σύνταξη Αναπηρίας</h3><i class="fas fa-plus indicator"></i></div>
-        <div class="doc-body">
-            <ul>
-                <li><strong>Κωδικοί Taxisnet & Ταυτότητα</strong></li>
-                <li><strong>Λογαριασμός Τράπεζας (IBAN)</strong></li>
-                <li><strong>Εθνικό Μητρώο Επικοινωνίας (ΕΜΕΠ)</strong></li>
-                <li><strong>Γνωμάτευση ΚΕΠΑ</strong><span class="sub-text">Αν υπάρχει ήδη παλαιότερη</span></li>
-            </ul>
-        </div>
+    <div class="section-label fade-in-up delay-4">Γρήγορη Εξουσιοδότηση</div>
+    <div class="copy-section fade-in-up delay-4">
+        <p id="authText">Εξουσιοδοτώ τον Πέτρο Γκόρο του Κωνσταντίνου, με ΑΔΤ ΑΖ724619, όπως ενεργήσει αντί εμού κάθε απαραίτητη ενέργεια για τη διεκπεραίωση υπόθεσής μου.</p>
+        <button class="btn-copy" onclick="copyGo()">
+            <i class="fas fa-copy"></i> ΑΝΤΙΓΡΑΦΗ ΣΤΟΙΧΕΙΩΝ
+        </button>
     </div>
 
-    <div class="doc-card">
-        <div class="doc-header" onclick="toggle(this)"><h3><i class="fas fa-notes-medical"></i> Οδηγίες για ΚΕΠΑ</h3><i class="fas fa-plus indicator"></i></div>
-        <div class="doc-body">
-            <ul>
-                <li><strong>Ηλεκτρονική Αίτηση:</strong><span class="sub-text">Γίνεται πλέον ψηφιακά από εμάς.</span></li>
-                <li><strong>Επικοινωνία με Ιατρούς:</strong><span class="sub-text">Θα συμπληρώσουν τον εισηγητικό φάκελο ψηφιακά.</span></li>
-                <li><strong>Ενημέρωση με SMS:</strong><span class="sub-text">Θα λάβετε μήνυμα για την ημερομηνία εξέτασης.</span></li>
-            </ul>
-            <div class="sos-box" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd;">ΠΡΟΣΟΧΗ: Έχετε μαζί σας όλες τις πρωτότυπες εξετάσεις την ημέρα της επιτροπής.</div>
+    <div class="section-label fade-in-up delay-5">Ραντεβού & Επικοινωνία</div>
+    <div class="contact-wrapper fade-in-up delay-5">
+        <div class="quick-actions">
+            <div class="qa-tile" onclick="openSmartLink('tel:6955316277', '')">
+                <div class="qa-icon tel"><i class="fas fa-phone"></i></div>
+                <span>Κλήση</span>
+            </div>
+            <div class="qa-tile" onclick="openSmartLink('viber://chat?number=%2B306955316277', '')">
+                <div class="qa-icon viber"><i class="fab fa-viber"></i></div>
+                <span>Viber</span>
+            </div>
+            <div class="qa-tile" onclick="openSmartLink('mailto:sintaxi@taxisdp.gr', '')">
+                <div class="qa-icon email"><i class="fas fa-envelope"></i></div>
+                <span>Email</span>
+            </div>
         </div>
-    </div>
 
-    <div class="doc-card">
-        <div class="doc-header" onclick="toggle(this)"><h3><i class="fas fa-info-circle"></i> Οδηγίες για ΚΕΠ (ΕΜΕΠ)</h3><i class="fas fa-plus indicator"></i></div>
-        <div class="doc-body">
-            <ul>
-                <li><strong>Κινητό στο όνομά σας:</strong><span class="sub-text">Απαραίτητο για ταυτοποίηση</span></li>
-                <li><strong>Επίσκεψη στο ΚΕΠ:</strong><span class="sub-text">Έχετε μαζί ταυτότητα και κινητό</span></li>
-                <li><strong>Δήλωση Στοιχείων:</strong><span class="sub-text">Ζητήστε δήλωση κινητού και email</span></li>
-            </ul>
-            <p style="font-size: 0.8rem; font-weight: 700; margin-top: 15px;">Email γραφείου για δήλωση:</p>
-            <div style="background:#fff; padding:10px; border:1px solid #ddd; border-radius:8px; font-size:0.75rem;">
-                <code>sintaxi+το_ονοματεπώνυμό_σας@taxisdp.gr</code>
+        <div class="action-list">
+            <div class="action-row primary" onclick="openSmartLink('https://calendar.app.google/uyssxHBnhQHURkA89', 'Google Calendar')">
+                <i class="fas fa-calendar-alt ar-icon"></i>
+                <span class="ar-text">Κλείστε Ψηφιακό Ραντεβού</span>
+                <i class="fas fa-chevron-right ar-chevron"></i>
+            </div>
+            <div class="action-row" onclick="openSmartLink('http://maps.google.com/?q=Πατριάρχου Γρηγορίου Ε 10, Τρίπολη', 'Χάρτες')">
+                <i class="fas fa-map-marked-alt ar-icon map"></i>
+                <span class="ar-text">Οδηγίες Χάρτη (Γραφείο)</span>
+                <i class="fas fa-chevron-right ar-chevron"></i>
+            </div>
+            <div class="action-row" onclick="openSmartLink('https://g.page/r/CV_n33h4nE4jEAE/review', 'Google Reviews')">
+                <i class="fab fa-google ar-icon google"></i>
+                <span class="ar-text">Αφήστε μια Κριτική</span>
+                <i class="fas fa-chevron-right ar-chevron"></i>
             </div>
         </div>
     </div>
 
-    <div class="section-label">Γρήγορη Εξουσιοδότηση</div>
-    <div class="copy-section">
-        <p id="authText" style="font-size:0.8rem; font-style:italic; margin:0; line-height:1.4;">Εξουσιοδοτώ τον Πέτρο Γκόρο του Κωνσταντίνου, με ΑΔΤ ΑΖ724619, όπως ενεργήσει αντί εμού κάθε απαραίτητη ενέργεια για τη διεκπεραίωση της συνταξιοδοτικής μου υπόθεσης.</p>
-        <button class="btn-copy" onclick="copyGo()">
-            <i class="fas fa-copy"></i> ΑΝΤΙΓΡΑΦΗ & GOV.GR
-        </button>
-    </div>
-
-    <div class="section-label">Ραντεβού & Επικοινωνία</div>
-    <div class="contact-grid">
-        <a href="https://calendar.app.google/uyssxHBnhQHURkA89" class="contact-btn full-width">
-            <i class="fas fa-calendar-alt"></i><span>ΚΛΕΙΣΤΕ ΡΑΝΤΕΒΟΥ</span>
-        </a>
-        <a href="viber://chat?number=%2B306955316277" class="contact-btn">
-            <i class="fab fa-viber"></i><span>VIBER</span>
-        </a>
-        <a href="tel:6955316277" class="contact-btn">
-            <i class="fas fa-mobile-alt"></i><span>ΚΙΝΗΤΟ</span>
-        </a>
-        <a href="tel:2710224939" class="contact-btn">
-            <i class="fas fa-phone"></i><span>ΓΡΑΦΕΙΟ</span>
-        </a>
-        <a href="mailto:sintaxi@taxisdp.gr" class="contact-btn">
-            <i class="fas fa-envelope"></i><span>EMAIL</span>
-        </a>
-        <a href="https://maps.google.com/?q=Πατριάρχου+Γρηγορίου+Ε+10+Τρίπολη" class="contact-btn">
-            <i class="fas fa-map-marked-alt"></i><span>ΧΑΡΤΗΣ</span>
-        </a>
-        <a href="https://g.page/r/CV_n33h4nE4jEAE/review" class="contact-btn">
-            <i class="fab fa-google"></i><span>GOOGLE REVIEW</span>
-        </a>
-    </div>
-
     <footer class="app-footer">
-        <div class="footer-name">Πέτρος Γκόρος</div>
-        <div class="footer-desc">Διεκπεραίωση Συνταξιοδοτικών Υποθέσεων</div>
-        <div style="font-size: 0.85rem; opacity: 0.8;">Πατριάρχου Γρηγορίου Ε 10, Τρίπολη</div>
-        <div class="footer-info">© 2026 SintaxisApp | Ολοκληρωμένες Λύσεις Συντάξεων</div>
+        <div class="footer-content">
+            <div class="footer-name">Πέτρος Γκόρος</div>
+            <div class="footer-desc">Συνταξιοδοτικές Υποθέσεις</div>
+            
+            <div class="footer-contact-info">
+                <div class="fc-item"><i class="fas fa-map-marker-alt"></i> Πατρ. Γρηγορίου Ε 10, Τρίπολη</div>
+                <div class="fc-item"><i class="fas fa-phone-alt"></i> 2710 224939 | 6955 316277</div>
+                <div class="fc-item"><i class="fas fa-envelope"></i> sintaxi@taxisdp.gr</div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            © 2026 SintaxisApp | Ολοκληρωμένες Λύσεις Συντάξεων
+        </div>
     </footer>
 </div>
 
 <script>
-    function toggle(header) {
-        const body = header.nextElementSibling;
-        const icon = header.querySelector('i.indicator');
-        const isOpen = body.style.display === 'block';
-        
-        document.querySelectorAll('.doc-body').forEach(b => b.style.display = 'none');
-        document.querySelectorAll('.doc-header i.indicator').forEach(i => { i.className = 'fas fa-plus indicator'; });
+    // 1. ΔΥΝΑΜΙΚΟΣ ΧΑΙΡΕΤΙΣΜΟΣ ΚΑΙ ΤΥΧΑΙΕΣ ΦΡΑΣΕΙΣ
+    function setGreeting() {
+        const hour = new Date().getHours();
+        let greeting = '';
 
-        if (!isOpen) {
-            body.style.display = 'block';
-            icon.className = 'fas fa-minus indicator';
+        if (hour >= 6 && hour < 12) {
+            greeting = 'Καλημέρα!';
+        } else if (hour >= 12 && hour < 15) {
+            greeting = 'Χαίρετε!';
+        } else if (hour >= 15 && hour < 24) {
+            greeting = 'Καλησπέρα!';
+        } else {
+            greeting = 'Χαίρετε!'; // 00:00 - 05:59
+        }
+
+        const phrases = [
+            "Για οτιδήποτε χρειαστείτε, είμαστε στη διάθεσή σας.",
+            "Με συνέπεια και σεβασμό, δίπλα σας.",
+            "Βρισκόμαστε πάντα στη διάθεσή σας.",
+            "Η συνταξιοδότησή σας είναι προτεραιότητά μας.",
+            "Σχεδιάζουμε μαζί το αύριο."
+        ];
+        const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+
+        document.getElementById('greetingText').innerHTML = `
+            <strong style="color: #ffffff; font-size: 1.1rem; letter-spacing: 0.5px;">${greeting}</strong><br>
+            <span style="font-size: 0.75rem; font-weight: 400; opacity: 0.9; color: #e2e8f0;">${randomPhrase}</span>
+        `;
+    }
+
+    // 2. INITIALIZATION
+    window.addEventListener('load', function() {
+        setGreeting();
+        setTimeout(function() {
+            document.getElementById('splash').style.opacity = '0';
+            setTimeout(() => { document.getElementById('splash').style.display = 'none'; }, 600);
+        }, 1200);
+    });
+
+    // 3. SHARE DIGITAL CARD (Με link της εφαρμογής)
+    function shareDigitalCard() {
+        const appLink = window.location.href;
+        const shareData = {
+            title: 'Πέτρος Γκόρος - Συνταξιολόγος',
+            text: 'Σου προτείνω το γραφείο του Πέτρου Γκόρου (Συνταξιοδοτικές Υποθέσεις).\n\n📍 Πατρ. Γρηγορίου Ε 10, Τρίπολη\n📱 6955316277\n☎️ 2710224939\n\n🌐 Δες την εφαρμογή εδώ: ' + appLink,
+        };
+
+        if (navigator.share) {
+            navigator.share(shareData).catch(console.error);
+        } else {
+            navigator.clipboard.writeText(shareData.text).then(() => {
+                showToast('Τα στοιχεία επικοινωνίας αντιγράφηκαν!');
+            });
         }
     }
 
+    // BOTTOM SHEET
+    function openSheet(dataId, title, iconClass, iconColor, bgColor) {
+        document.getElementById('sheetTitle').innerText = title;
+        document.getElementById('sheetContent').innerHTML = document.getElementById('data-' + dataId).innerHTML;
+        const iconElement = document.getElementById('sheetIcon');
+        iconElement.innerHTML = `<i class="fas ${iconClass}"></i>`;
+        iconElement.style.color = iconColor;
+        iconElement.style.backgroundColor = bgColor;
+        document.querySelector('.sheet-overlay').classList.add('show');
+        document.getElementById('bottomSheet').classList.add('show');
+    }
+    
+    function closeSheet() {
+        document.querySelector('.sheet-overlay').classList.remove('show');
+        document.getElementById('bottomSheet').classList.remove('show');
+    }
+
+    // SMART MODAL
+    let pendingUrl = '';
+    function openSmartLink(url, destName) {
+        pendingUrl = url;
+        const mIcon = document.getElementById('modalIcon');
+        const mTitle = document.getElementById('modalTitle');
+        const mDesc = document.getElementById('modalDesc');
+
+        if (url.startsWith('tel:')) {
+            mIcon.className = 'fas fa-phone-alt mi-call';
+            mTitle.innerText = 'Πραγματοποίηση Κλήσης';
+            mDesc.innerText = 'Θέλετε να καλέσετε το τηλέφωνο του γραφείου;';
+        } else if (url.startsWith('viber:')) {
+            mIcon.className = 'fab fa-viber mi-viber';
+            mTitle.innerText = 'Άνοιγμα Viber';
+            mDesc.innerText = 'Θέλετε να ανοίξετε το Viber για αποστολή μηνύματος;';
+        } else if (url.startsWith('mailto:')) {
+            mIcon.className = 'fas fa-envelope mi-email';
+            mTitle.innerText = 'Αποστολή Email';
+            mDesc.innerText = 'Θέλετε να ανοίξετε την εφαρμογή email σας;';
+        } else {
+            mIcon.className = 'fas fa-external-link-alt mi-external';
+            mTitle.innerText = `Μετάβαση σε ${destName};`;
+            mDesc.innerText = 'Πρόκειται να μεταφερθείτε σε μια εξωτερική σελίδα. Θέλετε να συνεχίσετε;';
+        }
+
+        document.getElementById('modalOverlay').classList.add('show');
+    }
+
+    function closeModal() { 
+        document.getElementById('modalOverlay').classList.remove('show'); 
+    }
+    
+    function proceedToLink() { 
+        closeModal(); 
+        if(pendingUrl) { window.location.href = pendingUrl; } 
+    }
+
+    // COPY
+    function showToast(message) {
+        const toast = document.getElementById("toast");
+        toast.querySelector("span").innerText = message;
+        toast.classList.add("show");
+        setTimeout(function(){ toast.classList.remove("show"); }, 2000);
+    }
+    
     function copyGo() {
         const text = document.getElementById('authText').innerText;
         navigator.clipboard.writeText(text).then(() => {
-            alert('Το κείμενο αντιγράφηκε! Μεταφέρεστε στο Gov.gr');
-            window.location.href = "https://www.gov.gr/ipiresies/polites-kai-kathemerinoteta/psephiaka-eggrapha-gov-gr/ekdose-exousiodoteses";
+            showToast('Τα στοιχεία αντιγράφηκαν!');
+            setTimeout(() => { 
+                openSmartLink('https://www.gov.gr/ipiresies/polites-kai-kathemerinoteta/psephiaka-eggrapha-gov-gr/ekdose-exousiodoteses', 'Gov.gr');
+                document.getElementById('modalDesc').innerText = 'Το κείμενο της Υπεύθυνης Δήλωσης έχει αντιγραφεί. Θέλετε να μεταβείτε τώρα στο Gov.gr για να την εκδώσετε;';
+            }, 1000);
+        }).catch(err => {
+            showToast('Αποτυχία αντιγραφής.');
         });
     }
 </script>
